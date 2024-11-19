@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import axios from 'axios'
 import Keyboard from './Keyboard.jsx'
+import EnterButton from './EnterButton.jsx'
+import BackSpace from './BackSpace.jsx'
 
 const WORD_LENGTH = 5
 const TOTAL_GUESSES = 6
@@ -147,9 +149,19 @@ function App() {
           key={index}/>
         )
       })}
-      <Keyboard></Keyboard>
+    
       <button className="m-4 p-4 border-white hover:bg-gray-300 text-2xl font-semibold"
       onClick={(e) => {resetGame(); e.target.blur()}}>Reset Game</button>
+      <Keyboard
+       handleAlphabetical={handleAlphabetical}
+      correctWord={correctWord}
+      guessedWords={guessedWords}
+      wordCount={wordCount}
+/>
+<div className="flex justify-center">
+      <EnterButton handleEnter={handleEnter}/>
+      <BackSpace handleBackspace={handleBackspace}/>
+</div>
     </div>
   )
 }
@@ -161,12 +173,14 @@ function WordLine( {word, correctWord, correctLetterObject, revealed} ) {
 
         const hasCorrectLocation = letter === correctWord[index]
         const hasCorrectLetter = letter in correctLetterObject
+        const letterNotInWord = !hasCorrectLetter
 
         return (
           <LetterBox 
           letter={letter}
           green={hasCorrectLocation && hasCorrectLetter && revealed}
           yellow={!hasCorrectLocation && hasCorrectLetter && revealed}
+          gray = {letterNotInWord && revealed}
            key={index}/>
         )
       })}
@@ -174,13 +188,14 @@ function WordLine( {word, correctWord, correctLetterObject, revealed} ) {
   )
 }
 
-function LetterBox({letter, green, yellow}) {
+function LetterBox({letter, green, yellow, gray}) {
   const isTyped = letter !== " ";
+  const empty = letter == " "
   return (
     <div className={`w-24 h-24 border-2 rounded-lg text-black text-6xl flex items-center justify-center uppercase 
       ${isTyped ? 'border-black' : 'border-gray-300'} 
-      ${green ? "bg-green-500" : yellow ? "bg-yellow-500" : "bg-white"
-    }`}>
+      ${empty ? "bg-white" : gray ?  "bg-gray-300" : green ? "bg-green-500" : yellow ? "bg-yellow-500" : "bg-white"}
+      `}>
       {letter}
     </div>
   )
